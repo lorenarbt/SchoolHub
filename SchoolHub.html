@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gerenciamento de Oficinas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #1e5799 0%,#207cca 51%,#2989d8 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        h1, h2, h3 {
+            color: #fff;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: #1e5799;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        h3 {
+            color: #207cca;
+            text-align: left;
+            margin: 15px 0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #444;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: #2989d8;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(41, 137, 216, 0.2);
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: #2989d8;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            background: #1e5799;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-secondary {
+            background: #2ecc71;
+        }
+        
+        .btn-secondary:hover {
+            background: #27ae60;
+        }
+        
+        .upload-area {
+            border: 2px dashed #2989d8;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+            background: #f8f9ff;
+            transition: all 0.3s;
+        }
+        
+        .upload-area:hover {
+            background: #e8f4ff;
+        }
+        
+        .upload-area p {
+            margin: 10px 0;
+            color: #666;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: #2989d8;
+            margin-bottom: 15px;
+        }
+        
+        .suggestion-card {
+            background: #e8f4ff;
+            border-left: 4px solid #2989d8;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .resource-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .resource-tag {
+            background: #d4e6f1;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .flex-container {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .flex-container > div {
+            flex: 1;
+        }
+        
+        .results-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .school-info {
+            background: #f0f7ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: #e8f4ff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .tab.active {
+            background: #2989d8;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            padding: 20px;
+            font-size: 14px;
+        }
+        
+        .status-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .status-fill {
+            height: 100%;
+            background: #2ecc71;
+            border-radius: 4px;
+        }
+        
+        .compatibility {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sistema de Gerenciamento de Oficinas Educacionais</h1>
+    
+    <div class="container">
+        <div>
+            <div class="card">
+                <h2>Adicionar Nova Oficina</h2>
+                
+                <form id="workshopForm">
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label for="workshopName">Nome da Oficina *</label>
+                            <input type="text" id="workshopName" required placeholder="Ex: Introdução à Programação">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="workshopCategory">Categoria *</label>
+                            <select id="workshopCategory" required>
+                                <option value="">Selecione uma categoria</option>
+                                <option value="tecnologia">Tecnologia</option>
+                                <option value="ciencias">Ciências</option>
+                                <option value="artes">Artes</option>
+                                <option value="esportes">Esportes</option>
+                                <option value="meio-ambiente">Meio Ambiente</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="workshopDuration">Duração (horas) *</label>
+                            <input type="number" id="workshopDuration" min="1" max="8" required placeholder="Ex: 2">
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Recursos Necessários</h3>
+                        <p class="help-text">Marque todos os recursos necessários para esta oficina</p>
+                        
+                        <div class="resource-list">
+                            <label class="resource-tag">
+                                <input type="checkbox" name="resources" value="computadores"> Computadores
+                            </label>
+                            <label class="resource-tag">
+                                <input type="checkbox" name="resources" value="internet"> Internet
+                            </label>
+                            <label class="resource-tag">
+                                <input type="checkbox" name="resources" value="projetor"> Projetor
+                            </label>
+                            <label class="resource-tag">
+                                <input type="checkbox" name="resources" value="material_impressao"> Material de Impressão
+                            </label>
+                            <label class="resource-tag">
+                                <input type="checkbox" name="resources" value="equipamentos_esportivos"> Equipamentos Esportivos
+                            </label>
+                            <label class="resource-tag">
+                                <input type="checkbox" name="resources" value="instrumentos_musicais"> Instrumentos Musicais
+                            </label>
+                            <label class="resource-tag">
+                                <input type="checkbox" name="resources" value="kits_ciencia"> Kits de Ciência
+                            </label>
+                            <label class="resource-tag">
+                                <input type="checkbox" name="resources" value="mesas_trabalho"> Mesas de Trabalho
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label for="targetAudience">Público Alvo *</label>
+                            <input type="text" id="targetAudience" required placeholder="Ex: Alunos do 6º ao 9º ano">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="instructorsCount">Quantidade de Instrutores *</label>
+                            <input type="number" id="instructorsCount" min="1" max="10" required placeholder="Ex: 2">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="workshopNotes">Observações</label>
+                            <textarea id="workshopNotes" placeholder="Detalhes adicionais sobre a oficina..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Inserir Imagem</h3>
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-icon">📁</div>
+                            <p>Faça upload ou arraste o arquivo</p>
+                            <p><small>PNG ou JPG (max. 2MB)</small></p>
+                            <input type="file" id="imageUpload" accept="image/png, image/jpeg" style="display: none;">
+                            <button type="button" class="btn btn-secondary" id="uploadBtn">Selecionar Imagem</button>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn">Salvar Oficina</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h2>Dados da Instituição</h2>
+                <form id="schoolForm">
+                    <div class="form-group">
+                        <label for="computersCount">Quantidade de computadores *</label>
+                        <input type="number" id="computersCount" min="0" required placeholder="Ex: 15">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="studentsCount">Quantidade de alunos *</label>
+                        <input type="number" id="studentsCount" min="1" required placeholder="Ex: 300">
+                    </div>
+                    
+                    <div class="flex-container">
+                        <div class="form-group">
+                            <label for="internetAccess">Acesso à internet? *</label>
+                            <select id="internetAccess" required>
+                                <option value="">Selecione</option>
+                                <option value="sim">Sim</option>
+                                <option value="nao">Não</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="internetSpeed">Qualidade da internet (MB/s)</label>
+                            <input type="number" id="internetSpeed" min="0" placeholder="Ex: 50">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-secondary">Salvar Dados</button>
+                </form>
+            </div>
+        </div>
+        
+        <div>
+            <div class="card">
+                <h2>Sugestões de Oficinas</h2>
+                <p>Baseado nos recursos disponíveis na sua instituição</p>
+                
+                <div class="tabs">
+                    <div class="tab active" data-tab="suggestions">Sugestões</div>
+                    <div class="tab" data-tab="all-workshops">Todas as Oficinas</div>
+                </div>
+                
+                <div class="tab-content active" id="suggestionsTab">
+                    <div class="school-info">
+                        <h3>Recursos da Instituição</h3>
+                        <div class="resource-list">
+                            <span class="resource-tag">Computadores: <span id="res-computers">0</span></span>
+                            <span class="resource-tag" id="res-internet">Internet: Não</span>
+                            <span class="resource-tag">Alunos: <span id="res-students">0</span></span>
+                        </div>
+                    </div>
+                    
+                    <div id="suggestionsList" class="results-container">
+                        <p class="help-text">Preencha os dados da instituição para ver sugestões de oficinas adequadas aos recursos disponíveis.</p>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="allWorkshopsTab">
+                    <div id="workshopsList" class="results-container">
+                        <p class="help-text">Nenhuma oficina cadastrada ainda.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Escolas de Salvador</h2>
+                <p>Dados das escolas filtradas de Salvador</p>
+                
+                <div class="resource-list">
+                    <span class="resource-tag">Total de escolas: 10</span>
+                    <span class="resource-tag">Escolas com internet: 8</span>
+                    <span class="resource-tag">Média de computadores: 18</span>
+                </div>
+                
+                <div class="results-container" style="max-height: 300px;">
+                    <div class="suggestion-card">
+                        <h3>Colégio Estadual de Salvador</h3>
+                        <p><strong>Bairro:</strong> Barra</p>
+                        <div class="compatibility">
+                            <span>Compatibilidade: 92%</span>
+                            <div class="status-bar">
+                                <div class="status-fill" style="width: 92%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="suggestion-card">
+                        <h3>Escola Municipal Pedro Calmon</h3>
+                        <p><strong>Bairro:</strong> Rio Vermelho</p>
+                        <div class="compatibility">
+                            <span>Compatibilidade: 78%</span>
+                            <div class="status-bar">
+                                <div class="status-fill" style="width: 78%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="suggestion-card">
+                        <h3>Centro Educacional Santo Antônio</h3>
+                        <p><strong>Bairro:</strong> Pituba</p>
+                        <div class="compatibility">
+                            <span>Compatibilidade: 85%</span>
+                            <div class="status-bar">
+                                <div class="status-fill" style="width: 85%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Sistema de Gerenciamento de Oficinas Educacionais | Desenvolvido para instituições de Salvador, BA</p>
+    </footer>
+
+    <script>
+        // Dados de exemplo para oficinas
+        const sampleWorkshops = [
+            {
+                id: 1,
+                name: "Introdução à Programação",
+                category: "tecnologia",
+                duration: 2,
+                resources: ["computadores", "internet", "projetor"],
+                audience: "Alunos do 6º ao 9º ano",
+                instructors: 2,
+                notes: "Curso introdutório de lógica de programação usando Scratch",
+                compatibility: 95
+            },
+            {
+                id: 2,
+                name: "Robótica Educacional",
+                category: "tecnologia",
+                duration: 3,
+                resources: ["computadores", "kits_ciencia", "mesas_trabalho"],
+                audience: "Alunos do Ensino Médio",
+                instructors: 3,
+                notes: "Montagem e programação de robôs simples",
+                compatibility: 80
+            },
+            {
+                id: 3,
+                name: "Oficina de Música",
+                category: "artes",
+                duration: 2,
+                resources: ["instrumentos_musicais"],
+                audience: "Todos os alunos",
+                instructors: 1,
+                notes: "Introdução à teoria musical e prática com instrumentos",
+                compatibility: 100
+            }
+        ];
+        
+        // Dados da instituição
+        let schoolData = {
+            computers: 0,
+            students: 0,
+            internet: "",
+            speed: 0
+        };
+        
+        // Elementos DOM
+        const uploadArea = document.getElementById('uploadArea');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const imageUpload = document.getElementById('imageUpload');
+        const workshopForm = document.getElementById('workshopForm');
+        const schoolForm = document.getElementById('schoolForm');
+        const suggestionsList = document.getElementById('suggestionsList');
+        const workshopsList = document.getElementById('workshopsList');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        // Atualizar recursos da instituição
+        function updateSchoolResources() {
+            document.getElementById('res-computers').textContent = schoolData.computers;
+            document.getElementById('res-students').textContent = schoolData.students;
+            document.getElementById('res-internet').textContent = `Internet: ${schoolData.internet === 'sim' ? 'Sim' : 'Não'}`;
+        }
+        
+        // Gerar lista de sugestões
+        function generateSuggestions() {
+            if (schoolData.computers === 0 && schoolData.internet === "") {
+                suggestionsList.innerHTML = `<p class="help-text">Preencha os dados da instituição para ver sugestões de oficinas adequadas aos recursos disponíveis.</p>`;
+                return;
+            }
+            
+            let html = '';
+            
+            sampleWorkshops.forEach(workshop => {
+                // Calcular compatibilidade (simplificado)
+                let compatibility = 0;
+                if (schoolData.computers > 0 && workshop.resources.includes('computadores')) compatibility += 30;
+                if (schoolData.internet === 'sim' && workshop.resources.includes('internet')) compatibility += 30;
+                if (schoolData.students >= 30) compatibility += 20;
+                if (workshop.resources.every(res => ['projetor', 'material_impressao'].includes(res))) compatibility += 20;
+                
+                html += `
+                <div class="suggestion-card">
+                    <h3>${workshop.name}</h3>
+                    <p><strong>Categoria:</strong> ${workshop.category === 'tecnologia' ? 'Tecnologia' : workshop.category === 'artes' ? 'Artes' : 'Ciências'}</p>
+                    <p><strong>Duração:</strong> ${workshop.duration} horas</p>
+                    
+                    <div class="compatibility">
+                        <span>Compatibilidade: ${compatibility}%</span>
+                        <div class="status-bar">
+                            <div class="status-fill" style="width: ${compatibility}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="resource-list">
+                        ${workshop.resources.map(res => {
+                            let resName = '';
+                            switch(res) {
+                                case 'computadores': resName = 'Computadores'; break;
+                                case 'internet': resName = 'Internet'; break;
+                                case 'projetor': resName = 'Projetor'; break;
+                                case 'material_impressao': resName = 'Material de Impressão'; break;
+                                case 'equipamentos_esportivos': resName = 'Equipamentos Esportivos'; break;
+                                case 'instrumentos_musicais': resName = 'Instrumentos Musicais'; break;
+                                case 'kits_ciencia': resName = 'Kits de Ciência'; break;
+                                case 'mesas_trabalho': resName = 'Mesas de Trabalho'; break;
+                            }
+                            return `<span class="resource-tag">${resName}</span>`;
+                        }).join('')}
+                    </div>
+                    
+                    <p><strong>Público:</strong> ${workshop.audience}</p>
+                </div>
+                `;
+            });
+            
+            suggestionsList.innerHTML = html;
+        }
+        
+        // Gerar lista de todas as oficinas
+        function generateAllWorkshops() {
+            if (sampleWorkshops.length === 0) {
+                workshopsList.innerHTML = `<p class="help-text">Nenhuma oficina cadastrada ainda.</p>`;
+                return;
+            }
+            
+            let html = '';
+            
+            sampleWorkshops.forEach(workshop => {
+                html += `
+                <div class="suggestion-card">
+                    <h3>${workshop.name}</h3>
+                    <p><strong>Categoria:</strong> ${workshop.category === 'tecnologia' ? 'Tecnologia' : workshop.category === 'artes' ? 'Artes' : 'Ciências'}</p>
+                    <p><strong>Duração:</strong> ${workshop.duration} horas</p>
+                    
+                    <div class="resource-list">
+                        ${workshop.resources.map(res => {
+                            let resName = '';
+                            switch(res) {
+                                case 'computadores': resName = 'Computadores'; break;
+                                case 'internet': resName = 'Internet'; break;
+                                case 'projetor': resName = 'Projetor'; break;
+                                case 'material_impressao': resName = 'Material de Impressão'; break;
+                                case 'equipamentos_esportivos': resName = 'Equipamentos Esportivos'; break;
+                                case 'instrumentos_musicais': resName = 'Instrumentos Musicais'; break;
+                                case 'kits_ciencia': resName = 'Kits de Ciência'; break;
+                                case 'mesas_trabalho': resName = 'Mesas de Trabalho'; break;
+                            }
+                            return `<span class="resource-tag">${resName}</span>`;
+                        }).join('')}
+                    </div>
+                    
+                    <p><strong>Público:</strong> ${workshop.audience}</p>
+                    <p><strong>Instrutores:</strong> ${workshop.instructors}</p>
+                    ${workshop.notes ? `<p><strong>Observações:</strong> ${workshop.notes}</p>` : ''}
+                </div>
+                `;
+            });
+            
+            workshopsList.innerHTML = html;
+        }
+        
+        // Event Listeners
+        uploadBtn.addEventListener('click', () => {
+            imageUpload.click();
+        });
+        
+        imageUpload.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                const fileName = e.target.files[0].name;
+                uploadArea.innerHTML = `
+                    <div class="upload-icon">✅</div>
+                    <p>Arquivo selecionado:</p>
+                    <p><strong>${fileName}</strong></p>
+                    <button type="button" class="btn btn-secondary" id="changeBtn">Alterar Imagem</button>
+                `;
+                
+                document.getElementById('changeBtn').addEventListener('click', () => {
+                    imageUpload.click();
+                });
+            }
+        });
+        
+        schoolForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            schoolData = {
+                computers: parseInt(document.getElementById('computersCount').value) || 0,
+                students: parseInt(document.getElementById('studentsCount').value) || 0,
+                internet: document.getElementById('internetAccess').value,
+                speed: parseInt(document.getElementById('internetSpeed').value) || 0
+            };
+            
+            updateSchoolResources();
+            generateSuggestions();
+            
+            alert('Dados da instituição salvos com sucesso!');
+        });
+        
+        workshopForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Capturar valores do formulário
+            const workshopData = {
+                name: document.getElementById('workshopName').value,
+                category: document.getElementById('workshopCategory').value,
+                duration: parseInt(document.getElementById('workshopDuration').value),
+                resources: Array.from(document.querySelectorAll('input[name="resources"]:checked')).map(cb => cb.value),
+                audience: document.getElementById('targetAudience').value,
+                instructors: parseInt(document.getElementById('instructorsCount').value),
+                notes: document.getElementById('workshopNotes').value
+            };
+            
+            // Adicionar à lista de oficinas (em um sistema real, enviaria para um servidor)
+            sampleWorkshops.push({
+                ...workshopData,
+                id: sampleWorkshops.length + 1,
+                compatibility: 0
+            });
+            
+            // Atualizar listas
+            generateAllWorkshops();
+            generateSuggestions();
+            
+            alert('Oficina cadastrada com sucesso!');
+            workshopForm.reset();
+        });
+        
+        // Sistema de abas
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remover classe ativa de todas as abas e conteúdos
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                // Adicionar classe ativa à aba clicada
+                tab.classList.add('active');
+                
+                // Mostrar o conteúdo correspondente
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(`${tabId}Tab`).classList.add('active');
+            });
+        });
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSchoolResources();
+            generateSuggestions();
+            generateAllWorkshops();
+        });
+    </script>
+</body>
+</html>
